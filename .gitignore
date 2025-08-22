@@ -1,0 +1,24 @@
+# IDE files
+.idea/
+__pycache__/
+
+# Sensitive files
+data.py
+
+# Log files
+*.log
+
+# Service files
+upload_files_to_server.py
+upload_files_to_server.bat
+
+# Testing files
+*test*
+*.json
+
+# Venv
+venv/
+.venv/
+
+# Do not ignore!
+!requirements.txt
