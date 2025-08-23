@@ -5,6 +5,7 @@ from zoneinfo import ZoneInfo
 from telegram import (
     Update,
     BotCommandScopeAllPrivateChats,
+    BotCommandScopeChat,
 )
 from telegram.ext import (
     Application,
@@ -14,6 +15,7 @@ from telegram.ext import (
     ContextTypes,
     Defaults,
 )
+from telegram.helpers import escape_markdown
 
 from data import TOKEN, MY_ID
 from database import Database
@@ -22,6 +24,9 @@ from lichess import get_lichess_activity_message, get_lichess_username_from_id
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat = update.effective_chat
+    if chat.id not in about_to_set_lichess_username:
+        return
+
     lichess_username = get_lichess_username_from_id(update.message.text.strip())
     if lichess_username is None:
         await update.message.reply_text('Такого пользователя не существует, повтори попытку')
@@ -39,6 +44,7 @@ async def command_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if chat.id == MY_ID and not COMMANDS_SET:
             COMMANDS_SET = True
             await context.bot.set_my_commands(commands=bot_commands, scope=BotCommandScopeAllPrivateChats())
+            await context.bot.set_my_commands(commands=bot_commands_admin, scope=BotCommandScopeChat(MY_ID))
             await update.message.reply_text('👌')
             return
 
@@ -68,6 +74,19 @@ async def command_set_lichess_username(update: Update, context: ContextTypes.DEF
     await update.message.reply_text('Скинь свой ник на Lichess')
 
 
+async def command_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.id != MY_ID:
+        return
+
+    users = db.get_all_users()
+    msg = '*Пользователи бота:*\n'
+    for no, user in enumerate(users, start=1):
+        user.tg_last_name = f' {escape_markdown(user.tg_last_name)}' if user.tg_last_name else ''
+        lichess_username = escape_markdown(user.lichess_username) if user.lichess_username else '_ник на Lichess не установлен_'
+        msg += f'\n{no}) @{escape_markdown(user.tg_username)} ({user.tg_id}) — {escape_markdown(user.tg_first_name)}{user.tg_last_name} → {lichess_username}'
+    await context.bot.send_message(MY_ID, msg, parse_mode='markdown')
+
+
 async def send_lichess_activity(update: Update, lichess_username: str, context: ContextTypes.DEFAULT_TYPE = None, tg_username: str = None, tg_id: int = None) -> None:
     msg = get_lichess_activity_message(lichess_username)
     if msg is None:
@@ -90,6 +109,7 @@ def run_bot():
     # Commands
     app.add_handler(CommandHandler('start', command_start))
     app.add_handler(CommandHandler('set_lichess_username', command_set_lichess_username))
+    app.add_handler(CommandHandler('_users', command_users))
 
     # Errors
     app.add_error_handler(handle_error)
@@ -120,5 +140,10 @@ if __name__ == '__main__':
     bot_commands = [
         ('start', 'Старт'),
         ('set_lichess_username', 'Установить ник на Lichess'),
+    ]
+    bot_commands_admin = [
+        ('start', 'Старт'),
+        ('set_lichess_username', 'Установить ник на Lichess'),
+        ('_users', 'Список пользователей')
     ]
     run_bot()

@@ -54,6 +54,20 @@ class Database:
             )
         return None
 
+    def get_all_users(self) -> list[User]:
+        self.cur.execute('SELECT * FROM get_all_users();')
+        users = self.cur.fetchall()
+        return [
+            User(
+                id=user[0],
+                tg_id=user[1],
+                tg_username=user[2],
+                tg_first_name=user[3],
+                tg_last_name=user[4],
+                lichess_username=user[5]
+            ) for user in users
+        ]
+
     def add_user(self, tg_id: int, tg_username: str, tg_first_name: str, tg_last_name: str) -> Optional[str]:
         try:
             self.cur.execute(

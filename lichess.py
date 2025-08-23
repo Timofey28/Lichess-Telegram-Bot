@@ -18,6 +18,9 @@ def get_lichess_activity_message(username: str) -> Optional[str]:
         return None
 
     general_activity = GeneralActivity([Activity(**activity) for activity in response.json()])
+    if not general_activity.games and not general_activity.puzzles:
+        return f'У *{escape_markdown(username, version=2)}* в последнее время не было активности на Lichess'
+
     msg = f'*Последняя активность {escape_markdown(username, version=2)} на Lichess ({prettify_interval(general_activity.from_date, general_activity.to_date)})*'
     for game in general_activity.games:
         msg += f'\n\n  __{human_type(game.type)}__\n    Побед: {game.wins}\n    Поражений: {game.losses}\n    Ничьих: {game.draws}'
@@ -33,7 +36,7 @@ def get_lichess_activity_message(username: str) -> Optional[str]:
             diff = f'{"+" if general_activity.puzzles.rating_after > general_activity.puzzles.rating_before else "−"}{abs(general_activity.puzzles.rating_after - general_activity.puzzles.rating_before)}'
             msg += f'  ({diff})'
 
-    return msg.replace('(', '\(').replace(')', '\)').replace('+', '\+')
+    return msg.replace('(', '\(').replace(')', '\)').replace('+', '\+').replace('-', '\-')
 
 
 def get_lichess_username_from_id(lichess_id: str) -> Optional[str]:

@@ -16,6 +16,24 @@ END;
 $$ LANGUAGE plpgsql;
 
 
+CREATE OR REPLACE FUNCTION get_all_users()
+RETURNS TABLE(
+    id INT,
+    tg_id BIGINT,
+    tg_username VARCHAR(32),
+    tg_first_name VARCHAR(64),
+    tg_last_name VARCHAR(64),
+    lichess_username TEXT
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT u.id, u.tg_id, u.tg_username, u.tg_first_name, u.tg_last_name, u.lichess_username
+    FROM users u
+    ORDER BY u.id;
+END;
+$$ LANGUAGE plpgsql;
+
+
 CREATE OR REPLACE FUNCTION add_user(
     p_tg_id BIGINT,
     p_tg_username VARCHAR(32),
