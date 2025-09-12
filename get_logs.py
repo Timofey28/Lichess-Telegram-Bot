@@ -53,7 +53,7 @@ if __name__ == '__main__':
     sftp = SFTPConnection()
     print('Connection succesfully established ...')
     try:
-        files_to_download = ['main.log']
+        files_to_download = ['info.log']
         for file in files_to_download:
             print(f'{Colors.BOLD}- {file}... {Colors.ENDC}', end='')
             try:

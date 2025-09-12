@@ -126,7 +126,7 @@ if __name__ == '__main__':
     # Настройка логов
     logging.basicConfig(
         format='%(asctime)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s',
-        filename='main.log',
+        filename='info.log',
         filemode='w',
         level=logging.INFO
     )
