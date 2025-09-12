@@ -166,6 +166,12 @@ class Activity(BaseModel):
 
 class GeneralActivity:
     def __init__(self, activities: list[Activity]):
+        if not activities:
+            self._from_date = None
+            self._to_date = None
+            self._games = []
+            self._puzzles = None
+            return
         activities.sort(key=lambda x: x.date)
         self._from_date: date = activities[0].date
         self._to_date: date = activities[-1].date
