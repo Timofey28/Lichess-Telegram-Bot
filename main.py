@@ -71,7 +71,7 @@ async def command_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def command_set_lichess_username(update: Update, context: ContextTypes.DEFAULT_TYPE):
     about_to_set_lichess_username.add(update.effective_chat.id)
-    await update.message.reply_text('Скинь свой ник на Lichess')
+    await update.message.reply_text('Напиши свой ник на Lichess')
 
 
 async def command_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
