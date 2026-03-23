@@ -1,6 +1,7 @@
 import logging
 import traceback
 from zoneinfo import ZoneInfo
+import os
 
 from telegram import (
     Update,
@@ -123,6 +124,10 @@ def run_bot():
 
 
 if __name__ == '__main__':
+    if os.name == 'posix':
+        from setproctitle import setproctitle
+        setproctitle('lichess_bot')
+
     # Настройка логов
     logging.basicConfig(
         format='%(asctime)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s',
