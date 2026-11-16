@@ -326,10 +326,10 @@ class GeneralActivity:
         return self._correspondence_ends
 
 
-class User(BaseModel):
-    id: int
-    tg_id: int
-    tg_username: str
-    tg_first_name: str
-    tg_last_name: Optional[str]
-    lichess_username: Optional[str]
+# class User(BaseModel):
+#     id: int
+#     tg_id: int
+#     tg_username: str
+#     tg_first_name: str
+#     tg_last_name: Optional[str]
+#     lichess_username: Optional[str]

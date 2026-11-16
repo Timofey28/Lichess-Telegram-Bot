@@ -16,10 +16,10 @@ from telegram.ext import (
     ContextTypes,
     Defaults,
 )
-from telegram.helpers import escape_markdown
+# from telegram.helpers import escape_markdown
 
 from data import TOKEN, MY_ID
-from database import Database
+# from database import Database
 from lichess import get_lichess_activity_message, get_lichess_username_from_id
 
 
@@ -34,7 +34,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     about_to_set_lichess_username.remove(chat.id)
-    db.update_lichess_username(chat.id, lichess_username)
+    # db.update_lichess_username(chat.id, lichess_username)
     await send_lichess_activity(update, lichess_username)
 
 
@@ -49,25 +49,25 @@ async def command_start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text('👌')
             return
 
-        user = db.get_user(chat.id)
-        if user:
-            if user.lichess_username:
-                await send_lichess_activity(
-                    update=update,
-                    context=context,
-                    lichess_username=user.lichess_username,
-                    tg_username=user.tg_username,
-                    tg_id=user.tg_id
-                )
-
-            else:
-                await command_set_lichess_username(update, context)
-
-        else:
-            db.add_user(chat.id, chat.username, chat.first_name, chat.last_name)
-            await context.bot.send_message(MY_ID, f'Добавлен пользователь @{chat.username} ({chat.id})')
-            about_to_set_lichess_username.add(chat.id)
-            await update.message.reply_text('Твой ник на Lichess?')
+        # user = db.get_user(chat.id)
+        # if user:
+        #     if user.lichess_username:
+        #         await send_lichess_activity(
+        #             update=update,
+        #             context=context,
+        #             lichess_username=user.lichess_username,
+        #             tg_username=user.tg_username,
+        #             tg_id=user.tg_id
+        #         )
+        #
+        #     else:
+        #         await command_set_lichess_username(update, context)
+        #
+        # else:
+        #     db.add_user(chat.id, chat.username, chat.first_name, chat.last_name)
+        #     await context.bot.send_message(MY_ID, f'Добавлен пользователь @{chat.username} ({chat.id})')
+        #     about_to_set_lichess_username.add(chat.id)
+        #     await update.message.reply_text('Твой ник на Lichess?')
 
 
 async def command_set_lichess_username(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -75,17 +75,17 @@ async def command_set_lichess_username(update: Update, context: ContextTypes.DEF
     await update.message.reply_text('Напиши свой ник на Lichess')
 
 
-async def command_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.effective_chat.id != MY_ID:
-        return
-
-    users = db.get_all_users()
-    msg = '*Пользователи бота:*\n'
-    for no, user in enumerate(users, start=1):
-        user.tg_last_name = f' {escape_markdown(user.tg_last_name)}' if user.tg_last_name else ''
-        lichess_username = escape_markdown(user.lichess_username) if user.lichess_username else '_ник на Lichess не установлен_'
-        msg += f'\n{no}) @{escape_markdown(user.tg_username)} ({user.tg_id}) — {escape_markdown(user.tg_first_name)}{user.tg_last_name} → {lichess_username}'
-    await context.bot.send_message(MY_ID, msg, parse_mode='markdown')
+# async def command_users(update: Update, context: ContextTypes.DEFAULT_TYPE):
+#     if update.effective_chat.id != MY_ID:
+#         return
+#
+#     users = db.get_all_users()
+#     msg = '*Пользователи бота:*\n'
+#     for no, user in enumerate(users, start=1):
+#         user.tg_last_name = f' {escape_markdown(user.tg_last_name)}' if user.tg_last_name else ''
+#         lichess_username = escape_markdown(user.lichess_username) if user.lichess_username else '_ник на Lichess не установлен_'
+#         msg += f'\n{no}) @{escape_markdown(user.tg_username)} ({user.tg_id}) — {escape_markdown(user.tg_first_name)}{user.tg_last_name} → {lichess_username}'
+#     await context.bot.send_message(MY_ID, msg, parse_mode='markdown')
 
 
 async def send_lichess_activity(update: Update, lichess_username: str, context: ContextTypes.DEFAULT_TYPE = None, tg_username: str = None, tg_id: int = None) -> None:
@@ -110,13 +110,16 @@ def run_bot():
     # Commands
     app.add_handler(CommandHandler('start', command_start))
     app.add_handler(CommandHandler('set_lichess_username', command_set_lichess_username))
-    app.add_handler(CommandHandler('_users', command_users))
+    # app.add_handler(CommandHandler('_users', command_users))
 
     # Errors
     app.add_error_handler(handle_error)
 
     # Messages
     app.add_handler(MessageHandler(filters.TEXT, handle_message))
+
+    # Callbacks
+    # app.add_handler(CallbackQueryHandler(handle_callback))
 
     # Pools the bot
     print('Polling...')
@@ -138,7 +141,7 @@ if __name__ == '__main__':
     logger = logging.getLogger('httpx')
     logger.setLevel(logging.WARNING)
 
-    db = Database()
+    # db = Database()
     COMMANDS_SET = False
     about_to_set_lichess_username = set()
 
@@ -149,6 +152,6 @@ if __name__ == '__main__':
     bot_commands_admin = [
         ('start', 'Старт'),
         ('set_lichess_username', 'Установить ник на Lichess'),
-        ('_users', 'Список пользователей')
+        # ('_users', 'Список пользователей')
     ]
     run_bot()

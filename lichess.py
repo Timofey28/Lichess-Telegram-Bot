@@ -56,7 +56,7 @@ def get_lichess_activity_message(username: str) -> Optional[str]:
     else:
         msg = intro + msg
 
-    return msg.replace('(', '\(').replace(')', '\)').replace('+', '\+').replace('-', '\-')
+    return msg.replace('(', '\\(').replace(')', '\\)').replace('+', '\\+').replace('-', '\\-')
 
 
 def get_lichess_username_from_id(lichess_id: str) -> Optional[str]:
